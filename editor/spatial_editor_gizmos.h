@@ -330,6 +330,7 @@ public:
 	String get_name() const;
 	int get_priority() const;
 	void redraw(EditorSpatialGizmo *p_gizmo);
+	static Ref<SpatialMaterial> get_shape_faces_material(Ref<Shape> &shape);
 
 	String get_handle_name(const EditorSpatialGizmo *p_gizmo, int p_idx) const;
 	Variant get_handle_value(EditorSpatialGizmo *p_gizmo, int p_idx) const;
