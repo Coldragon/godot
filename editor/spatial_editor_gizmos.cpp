@@ -3417,6 +3417,18 @@ void CollisionShapeSpatialGizmoPlugin::redraw(EditorSpatialGizmo *p_gizmo) {
 
 		p_gizmo->add_lines(points, material);
 		p_gizmo->add_collision_segments(collision_segments);
+
+		// COLD
+		SphereMesh sm;
+		sm.set_radius(r);
+		sm.set_height(r*2);
+		Array a = sm.surface_get_arrays(0);
+		Ref<ArrayMesh> m = memnew(ArrayMesh);
+		m->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, a);
+		Ref<SpatialMaterial> spatial_material = get_shape_faces_material(s);
+		m->surface_set_material(0, spatial_material);
+		p_gizmo->add_mesh(m);
+		
 		Vector<Vector3> handles;
 		handles.push_back(Vector3(r, 0, 0));
 		p_gizmo->add_handles(handles, handles_material);
