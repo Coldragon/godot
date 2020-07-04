@@ -3420,6 +3420,33 @@ void CollisionShapeSpatialGizmoPlugin::redraw(EditorSpatialGizmo *p_gizmo) {
 			lines.push_back(a);
 			lines.push_back(b);
 		}
+		
+		// COLDRAGON
+		CubeMesh cm;
+		cm.set_size(aabb.size);
+		Array a = cm.surface_get_arrays(0);
+		Ref<ArrayMesh> m = memnew(ArrayMesh);
+		m->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, a);
+
+		Ref<SpatialMaterial> sm = memnew(SpatialMaterial);
+
+		if (bs->get_use_custom_faces_color()) {
+			
+			sm->set_albedo(bs->get_faces_color());
+			if (!bs->get_faces_texture().is_null()) {
+
+				sm->set_texture(SpatialMaterial::TEXTURE_ALBEDO, bs->get_faces_texture());
+				sm->set_flag(SpatialMaterial::FLAG_UV1_USE_TRIPLANAR, true);
+			}
+		}
+		else
+			sm->set_albedo(Color(0, 0, 1, 0.25));
+
+		sm->set_cull_mode(SpatialMaterial::CULL_DISABLED);
+		sm->set_feature(SpatialMaterial::FEATURE_TRANSPARENT, true);
+		m->surface_set_material(0, sm);
+		
+		p_gizmo->add_mesh(m);
 
 		Vector<Vector3> handles;
 

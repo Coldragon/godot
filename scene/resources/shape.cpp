@@ -59,6 +59,40 @@ void Shape::set_margin(real_t p_margin) {
 	PhysicsServer::get_singleton()->shape_set_margin(shape, margin);
 }
 
+void Shape::set_use_custom_faces_color(const bool &p_use_custom_faces_color) {
+
+	use_custom_faces_color = p_use_custom_faces_color;
+	notify_change_to_owners();
+	_change_notify("use_custom_faces_color");
+}
+
+bool Shape::get_use_custom_faces_color() const {
+
+	return use_custom_faces_color;
+}
+
+void Shape::set_faces_color(const Color &p_faces_color) {
+
+	faces_color = p_faces_color;
+	notify_change_to_owners();
+	_change_notify("faces_color");
+}
+
+Color Shape::get_faces_color() const {
+
+	return faces_color;
+}
+
+void Shape::set_faces_texture(const Ref<Texture> &p_faces_texture) {
+	faces_texture = p_faces_texture;
+	notify_change_to_owners();
+	_change_notify("faces_texture");
+}
+
+Ref<Texture> Shape::get_faces_texture() const {
+	return faces_texture;
+}
+
 Ref<ArrayMesh> Shape::get_debug_mesh() {
 
 	if (debug_mesh_cache.is_valid())
@@ -106,7 +140,20 @@ void Shape::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_margin", "margin"), &Shape::set_margin);
 	ClassDB::bind_method(D_METHOD("get_margin"), &Shape::get_margin);
 
+	ClassDB::bind_method(D_METHOD("set_faces_color", "faces_color"), &Shape::set_faces_color);
+	ClassDB::bind_method(D_METHOD("get_faces_color"), &Shape::get_faces_color);
+
+	ClassDB::bind_method(D_METHOD("set_faces_texture", "faces_texture"), &Shape::set_faces_texture);
+	ClassDB::bind_method(D_METHOD("get_faces_texture"), &Shape::get_faces_texture);
+
+	ClassDB::bind_method(D_METHOD("set_use_custom_faces_color", "use_custom_faces_color"), &Shape::set_use_custom_faces_color);
+	ClassDB::bind_method(D_METHOD("get_use_custom_faces_color"), &Shape::get_use_custom_faces_color);
+	
+	
 	ADD_PROPERTY(PropertyInfo(Variant::REAL, "margin", PROPERTY_HINT_RANGE, "0.001,10,0.001"), "set_margin", "get_margin");
+	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "faces_color"), "set_faces_color", "get_faces_color");
+	ADD_PROPERTY((PropertyInfo(Variant::OBJECT, "faces_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture")), "set_faces_texture", "get_faces_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "use_custom_faces_color"), "set_use_custom_faces_color", "get_use_custom_faces_color");
 }
 
 Shape::Shape() :
@@ -117,7 +164,9 @@ Shape::Shape() :
 
 Shape::Shape(RID p_shape) :
 		margin(0.04) {
-
+	set_use_custom_faces_color(false);
+	set_faces_color(Color(1.0, 0.0, 0.0, 0.25));
+	set_faces_texture(Ref<Texture>(nullptr));
 	shape = p_shape;
 }
 

@@ -31,6 +31,7 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
+#include "texture.h"
 #include "core/resource.h"
 class ArrayMesh;
 
@@ -44,6 +45,10 @@ class Shape : public Resource {
 
 	Ref<ArrayMesh> debug_mesh_cache;
 
+	bool use_custom_faces_color;
+	Color faces_color;
+	Ref<Texture> faces_texture;
+	
 protected:
 	static void _bind_methods();
 
@@ -63,6 +68,15 @@ public:
 	real_t get_margin() const;
 	void set_margin(real_t p_margin);
 
+	void set_use_custom_faces_color(const bool &p_use_custom_faces_color);
+	bool get_use_custom_faces_color() const;
+
+	void set_faces_texture(const Ref<Texture> &p_faces_texture);
+	Ref<Texture> get_faces_texture() const;
+
+	void set_faces_color(const Color &p_faces_color);
+	Color get_faces_color() const;
+	
 	Shape();
 	~Shape();
 };
