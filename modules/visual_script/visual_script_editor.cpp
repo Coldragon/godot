@@ -760,11 +760,19 @@ void VisualScriptEditor::_update_graph(int p_only_id) {
 					mono_color.a = 0.85;
 					c = mono_color;
 				}
-				gnode->add_theme_color_override("title_color", c);
+				gnode->add_theme_font_override("title_font", get_theme_font("bold", "EditorFonts"));
+				gnode->add_theme_color_override("title_color", c.get_v() > 0.5 ? Color(0.07, 0.07, 0.07, 1) : Color(0.91, 0.91, 0.91, 1));
 				c.a = 0.7;
-				gnode->add_theme_color_override("close_color", c);
+				gnode->add_theme_color_override("close_color", c.get_v() > 0.5 ? Color(0, 0, 0, 0.7) : Color(1, 1, 1, 0.7));
 				gnode->add_theme_color_override("resizer_color", ic);
 				gnode->add_theme_style_override("frame", sbf);
+				Ref<StyleBoxFlat> sb_selectedframe = sbf->duplicate();
+				Color c_selectedframe = Color(0, 0.80, 1.0);
+				sb_selectedframe->set_border_color(c_selectedframe);
+				c_selectedframe.a = 0.2;
+				sb_selectedframe->set_shadow_color(c_selectedframe);
+				sb_selectedframe->set_shadow_size(16);
+				gnode->add_theme_style_override("selectedframe", sb_selectedframe);
 			}
 
 			const Color mono_color = get_theme_color("mono_color", "Editor");
@@ -4026,6 +4034,14 @@ void VisualScriptEditor::_notification(int p_what) {
 					Color cn = E->get().second;
 					cn.a = c.a;
 					frame_style->set_border_color(cn);
+					frame_style->set_corner_radius_all(8);
+					frame_style->set_shadow_size(8);
+					frame_style->set_shadow_color(Color(0, 0, 0, 0.2));
+					frame_style->set_border_width_all(2);
+					frame_style->set_border_width(MARGIN_TOP, 24);
+					frame_style->set_expand_margin_size_all(4);
+					frame_style->set_default_margin(MARGIN_LEFT, 24);
+					frame_style->set_default_margin(MARGIN_RIGHT, 24);
 					node_styles[E->get().first] = frame_style;
 				}
 			}
