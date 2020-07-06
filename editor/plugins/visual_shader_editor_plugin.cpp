@@ -428,8 +428,9 @@ static Ref<StyleBoxEmpty> make_empty_stylebox(float p_margin_left = -1, float p_
 }
 
 void VisualShaderEditor::_update_created_node(GraphNode *node) {
+	Ref<StyleBoxFlat> sb = node->get_theme_stylebox("frame", "GraphNode")->duplicate();
 	if (EditorSettings::get_singleton()->get("interface/theme/use_graph_node_headers")) {
-		Ref<StyleBoxFlat> sb = node->get_theme_stylebox("frame", "GraphNode");
+		
 		Color c = sb->get_border_color();
 		Color ic;
 		Color mono_color;
@@ -442,12 +443,31 @@ void VisualShaderEditor::_update_created_node(GraphNode *node) {
 		}
 		mono_color.a = 0.85;
 		c = mono_color;
-
-		node->add_theme_color_override("title_color", c);
 		c.a = 0.7;
+		node->add_theme_color_override("title_color", c);
 		node->add_theme_color_override("close_color", c);
 		node->add_theme_color_override("resizer_color", ic);
+		node->add_theme_style_override("frame", sb);
 	}
+
+	sb->set_corner_radius_all(4);
+	sb->set_shadow_size(8);
+	sb->set_shadow_color(Color(0, 0, 0, 0.2));
+	sb->set_border_width_all(2);
+	sb->set_border_width(MARGIN_TOP, 24);
+	sb->set_expand_margin_size_all(4);
+	sb->set_default_margin(MARGIN_LEFT, 24);
+	sb->set_default_margin(MARGIN_RIGHT, 24);
+
+	Ref<StyleBoxFlat> sb_selected = sb->duplicate();
+	Ref<StyleBoxFlat> original_selected = node->get_theme_stylebox("selectedframe", "GraphNode");
+	Color border_selected = original_selected->get_border_color();
+	sb_selected->set_border_color(border_selected);
+	sb_selected->set_shadow_color(border_selected);
+	sb_selected->set_shadow_size(8);
+	
+	node->add_theme_color_override("title_color", sb->get_border_color().get_v() > 0.5 ? Color(0, 0, 0, 0.7) : Color(1, 1, 1, 0.7));
+	node->add_theme_style_override("frame", sb);
 }
 
 void VisualShaderEditor::_update_graph() {

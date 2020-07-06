@@ -771,7 +771,7 @@ void VisualScriptEditor::_update_graph(int p_only_id) {
 				sb_selectedframe->set_border_color(c_selectedframe);
 				c_selectedframe.a = 0.2;
 				sb_selectedframe->set_shadow_color(c_selectedframe);
-				sb_selectedframe->set_shadow_size(16);
+				sb_selectedframe->set_shadow_size(8);
 				gnode->add_theme_style_override("selectedframe", sb_selectedframe);
 			}
 
@@ -4034,7 +4034,7 @@ void VisualScriptEditor::_notification(int p_what) {
 					Color cn = E->get().second;
 					cn.a = c.a;
 					frame_style->set_border_color(cn);
-					frame_style->set_corner_radius_all(8);
+					frame_style->set_corner_radius_all(4);
 					frame_style->set_shadow_size(8);
 					frame_style->set_shadow_color(Color(0, 0, 0, 0.2));
 					frame_style->set_border_width_all(2);
