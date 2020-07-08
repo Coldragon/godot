@@ -31,10 +31,10 @@
 #ifndef CAPSULE_SHAPE_H
 #define CAPSULE_SHAPE_H
 
-#include "scene/resources/shape_3d.h"
+#include "scene/resources/shape_3d_visible.h"
 
-class CapsuleShape3D : public Shape3D {
-	GDCLASS(CapsuleShape3D, Shape3D);
+class CapsuleShape3D : public Shape3DVisible {
+	GDCLASS(CapsuleShape3D, Shape3DVisible);
 	float radius;
 	float height;
 
@@ -48,6 +48,10 @@ public:
 	float get_radius() const;
 	void set_height(float p_height);
 	float get_height() const;
+
+#ifdef DEBUG_ENABLED
+	Ref<ArrayMesh> get_debug_arraymesh_faces() const override;
+#endif
 
 	virtual Vector<Vector3> get_debug_mesh_lines();
 	virtual real_t get_enclosing_radius() const;

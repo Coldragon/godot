@@ -46,6 +46,10 @@ class CollisionShape3D : public Node3D {
 	Node *debug_shape;
 	bool debug_shape_dirty;
 
+#ifdef DEBUG_ENABLED
+	Node *debug_shape_faces;
+#endif
+
 	void resource_changed(RES res);
 	bool disabled;
 

@@ -31,10 +31,10 @@
 #ifndef CYLINDER_SHAPE_3D_H
 #define CYLINDER_SHAPE_3D_H
 
-#include "scene/resources/shape_3d.h"
+#include "scene/resources/shape_3d_visible.h"
 
-class CylinderShape3D : public Shape3D {
-	GDCLASS(CylinderShape3D, Shape3D);
+class CylinderShape3D : public Shape3DVisible {
+	GDCLASS(CylinderShape3D, Shape3DVisible);
 	float radius;
 	float height;
 
@@ -50,6 +50,10 @@ public:
 
 	virtual Vector<Vector3> get_debug_mesh_lines();
 	virtual real_t get_enclosing_radius() const;
+
+#ifdef DEBUG_ENABLED
+	Ref<ArrayMesh> get_debug_arraymesh_faces() const override;
+#endif
 
 	CylinderShape3D();
 };

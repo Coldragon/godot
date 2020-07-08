@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  box_shape_3d.h                                                       */
+/*  shape_3d_visible.h                                                   */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,32 +28,48 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef BOX_SHAPE_H
-#define BOX_SHAPE_H
+#ifndef SHAPE_3D_VISIBLE_H
+#define SHAPE_3D_VISIBLE_H
 
-#include "scene/resources/shape_3d_visible.h"
-
-class BoxShape3D : public Shape3DVisible {
-	GDCLASS(BoxShape3D, Shape3DVisible);
-	Vector3 extents;
-
-protected:
-	static void _bind_methods();
-
-	virtual void _update_shape();
-
-public:
-	void set_extents(const Vector3 &p_extents);
-	Vector3 get_extents() const;
-
-	virtual Vector<Vector3> get_debug_mesh_lines();
-	virtual real_t get_enclosing_radius() const;
+#include "core/resource.h"
+#include "shape_3d.h"
 
 #ifdef DEBUG_ENABLED
-	Ref<ArrayMesh> get_debug_arraymesh_faces() const override;
+#include "material.h"
+#include "texture.h"
 #endif
 
-	BoxShape3D();
+class Shape3DVisible : public Shape3D {
+	GDCLASS(Shape3DVisible, Shape3D);
+	OBJ_SAVE_TYPE(Shape3DVisible);
+
+#ifdef DEBUG_ENABLED
+	bool use_custom_faces_color;
+	Color faces_color;
+	Ref<Texture> faces_texture;
+	float faces_texture_size;
+#endif
+
+protected:
+	Shape3DVisible(RID p_shape);
+
+#ifdef DEBUG_ENABLED
+	static void _bind_methods();
+
+public:
+	void set_use_custom_faces_color(bool p_use_custom_faces_color);
+	bool get_use_custom_faces_color() const;
+	void set_faces_texture(const Ref<Texture> &p_faces_texture);
+	Ref<Texture> get_faces_texture() const;
+	void set_faces_color(const Color &p_faces_color);
+	Color get_faces_color() const;
+	void set_faces_texture_size(float p_faces_texture_size);
+	float get_faces_texture_size() const;
+	Ref<StandardMaterial3D> get_debug_material(bool p_disabled);
+	virtual Ref<ArrayMesh> get_debug_arraymesh_faces() const = 0;
+#endif
+
+	Shape3DVisible();
 };
 
-#endif // BOX_SHAPE_H
+#endif // SHAPE_3D_VISIBLE_H

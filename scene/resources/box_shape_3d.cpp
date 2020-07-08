@@ -29,6 +29,11 @@
 /*************************************************************************/
 
 #include "box_shape_3d.h"
+
+#ifdef DEBUG_ENABLED
+#include "primitive_meshes.h"
+#endif
+
 #include "servers/physics_server_3d.h"
 
 Vector<Vector3> BoxShape3D::get_debug_mesh_lines() {
@@ -67,6 +72,17 @@ Vector3 BoxShape3D::get_extents() const {
 	return extents;
 }
 
+#ifdef DEBUG_ENABLED
+Ref<ArrayMesh> BoxShape3D::get_debug_arraymesh_faces() const {
+	CubeMesh mesh;
+	mesh.set_size(extents * 2);
+	const Array a = mesh.surface_get_arrays(0);
+	Ref<ArrayMesh> m = memnew(ArrayMesh);
+	m->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, a);
+	return m;
+}
+#endif
+
 void BoxShape3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_extents", "extents"), &BoxShape3D::set_extents);
 	ClassDB::bind_method(D_METHOD("get_extents"), &BoxShape3D::get_extents);
@@ -75,6 +91,6 @@ void BoxShape3D::_bind_methods() {
 }
 
 BoxShape3D::BoxShape3D() :
-		Shape3D(PhysicsServer3D::get_singleton()->shape_create(PhysicsServer3D::SHAPE_BOX)) {
+		Shape3DVisible(PhysicsServer3D::get_singleton()->shape_create(PhysicsServer3D::SHAPE_BOX)) {
 	set_extents(Vector3(1, 1, 1));
 }

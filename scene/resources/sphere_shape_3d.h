@@ -31,10 +31,10 @@
 #ifndef SPHERE_SHAPE_3D_H
 #define SPHERE_SHAPE_3D_H
 
-#include "scene/resources/shape_3d.h"
+#include "scene/resources/shape_3d_visible.h"
 
-class SphereShape3D : public Shape3D {
-	GDCLASS(SphereShape3D, Shape3D);
+class SphereShape3D : public Shape3DVisible {
+	GDCLASS(SphereShape3D, Shape3DVisible);
 	float radius;
 
 protected:
@@ -48,6 +48,10 @@ public:
 
 	virtual Vector<Vector3> get_debug_mesh_lines();
 	virtual real_t get_enclosing_radius() const;
+
+#ifdef DEBUG_ENABLED
+	Ref<ArrayMesh> get_debug_arraymesh_faces() const override;
+#endif
 
 	SphereShape3D();
 };

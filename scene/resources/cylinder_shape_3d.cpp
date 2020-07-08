@@ -29,6 +29,11 @@
 /*************************************************************************/
 
 #include "cylinder_shape_3d.h"
+
+#ifdef DEBUG_ENABLED
+#include "primitive_meshes.h"
+#endif
+
 #include "servers/physics_server_3d.h"
 
 Vector<Vector3> CylinderShape3D::get_debug_mesh_lines() {
@@ -93,6 +98,19 @@ float CylinderShape3D::get_height() const {
 	return height;
 }
 
+#ifdef DEBUG_ENABLED
+Ref<ArrayMesh> CylinderShape3D::get_debug_arraymesh_faces() const {
+	CylinderMesh sm;
+	sm.set_bottom_radius(radius);
+	sm.set_top_radius(radius);
+	sm.set_height(height);
+	Array a = sm.surface_get_arrays(0);
+	Ref<ArrayMesh> m = memnew(ArrayMesh);
+	m->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, a);
+	return m;
+}
+#endif
+
 void CylinderShape3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_radius", "radius"), &CylinderShape3D::set_radius);
 	ClassDB::bind_method(D_METHOD("get_radius"), &CylinderShape3D::get_radius);
@@ -104,8 +122,9 @@ void CylinderShape3D::_bind_methods() {
 }
 
 CylinderShape3D::CylinderShape3D() :
-		Shape3D(PhysicsServer3D::get_singleton()->shape_create(PhysicsServer3D::SHAPE_CYLINDER)) {
+		Shape3DVisible(PhysicsServer3D::get_singleton()->shape_create(PhysicsServer3D::SHAPE_CYLINDER)) {
 	radius = 1.0;
 	height = 2.0;
+
 	_update_shape();
 }

@@ -29,6 +29,11 @@
 /*************************************************************************/
 
 #include "sphere_shape_3d.h"
+
+#ifdef DEBUG_ENABLED
+#include "primitive_meshes.h"
+#endif
+
 #include "servers/physics_server_3d.h"
 
 Vector<Vector3> SphereShape3D::get_debug_mesh_lines() {
@@ -73,6 +78,18 @@ float SphereShape3D::get_radius() const {
 	return radius;
 }
 
+#ifdef DEBUG_ENABLED
+Ref<ArrayMesh> SphereShape3D::get_debug_arraymesh_faces() const {
+	SphereMesh sm;
+	sm.set_radius(radius);
+	sm.set_height(radius * 2);
+	Array a = sm.surface_get_arrays(0);
+	Ref<ArrayMesh> m = memnew(ArrayMesh);
+	m->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, a);
+	return m;
+}
+#endif
+
 void SphereShape3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_radius", "radius"), &SphereShape3D::set_radius);
 	ClassDB::bind_method(D_METHOD("get_radius"), &SphereShape3D::get_radius);
@@ -81,6 +98,6 @@ void SphereShape3D::_bind_methods() {
 }
 
 SphereShape3D::SphereShape3D() :
-		Shape3D(PhysicsServer3D::get_singleton()->shape_create(PhysicsServer3D::SHAPE_SPHERE)) {
+		Shape3DVisible(PhysicsServer3D::get_singleton()->shape_create(PhysicsServer3D::SHAPE_SPHERE)) {
 	set_radius(1.0);
 }

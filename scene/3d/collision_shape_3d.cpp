@@ -37,6 +37,7 @@
 #include "scene/resources/capsule_shape_3d.h"
 #include "scene/resources/concave_polygon_shape_3d.h"
 #include "scene/resources/convex_polygon_shape_3d.h"
+#include "scene/resources/cylinder_shape_3d.h"
 #include "scene/resources/ray_shape_3d.h"
 #include "scene/resources/sphere_shape_3d.h"
 #include "scene/resources/world_margin_shape_3d.h"
@@ -190,6 +191,9 @@ CollisionShape3D::CollisionShape3D() {
 	//indicator = RenderingServer::get_singleton()->mesh_create();
 	disabled = false;
 	debug_shape = nullptr;
+#ifdef DEBUG_ENABLED
+	debug_shape_faces = nullptr;
+#endif
 	parent = nullptr;
 	owner_id = 0;
 	set_notify_local_transform(true);
@@ -210,6 +214,13 @@ void CollisionShape3D::_update_debug_shape() {
 		debug_shape = nullptr;
 	}
 
+#ifdef DEBUG_ENABLED
+	if (debug_shape_faces) {
+		debug_shape_faces->queue_delete();
+		debug_shape_faces = nullptr;
+	}
+#endif
+
 	Ref<Shape3D> s = get_shape();
 	if (s.is_null()) {
 		return;
@@ -220,6 +231,36 @@ void CollisionShape3D::_update_debug_shape() {
 	mi->set_mesh(mesh);
 	add_child(mi);
 	debug_shape = mi;
+
+#ifdef DEBUG_ENABLED
+	// Visible Faces
+	Ref<ArrayMesh> mesh_faces;
+	MeshInstance3D *mi_faces = memnew(MeshInstance3D);
+	if (Object::cast_to<SphereShape3D>(*s)) {
+		Ref<SphereShape3D> sphere_shape_3d = s;
+		const Ref<StandardMaterial3D> mat = sphere_shape_3d->get_debug_material(is_disabled());
+		mesh_faces = sphere_shape_3d->get_debug_arraymesh_faces();
+		mesh_faces->surface_set_material(0, mat);
+	} else if (Object::cast_to<BoxShape3D>(*s)) {
+		Ref<BoxShape3D> box_shape_3d = s;
+		const Ref<StandardMaterial3D> mat = box_shape_3d->get_debug_material(is_disabled());
+		mesh_faces = box_shape_3d->get_debug_arraymesh_faces();
+		mesh_faces->surface_set_material(0, mat);
+	} else if (Object::cast_to<CapsuleShape3D>(*s)) {
+		Ref<CapsuleShape3D> capsule_shape_3d = s;
+		const Ref<StandardMaterial3D> mat = capsule_shape_3d->get_debug_material(is_disabled());
+		mesh_faces = capsule_shape_3d->get_debug_arraymesh_faces();
+		mesh_faces->surface_set_material(0, mat);
+	} else if (Object::cast_to<CylinderShape3D>(*s)) {
+		Ref<CylinderShape3D> cylinder_shape_3d = s;
+		const Ref<StandardMaterial3D> mat = cylinder_shape_3d->get_debug_material(is_disabled());
+		mesh_faces = cylinder_shape_3d->get_debug_arraymesh_faces();
+		mesh_faces->surface_set_material(0, mat);
+	}
+	mi_faces->set_mesh(mesh_faces);
+	add_child(mi_faces);
+	debug_shape_faces = mi_faces;
+#endif
 }
 
 void CollisionShape3D::_shape_changed() {

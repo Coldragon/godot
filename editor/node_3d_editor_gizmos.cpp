@@ -3251,10 +3251,22 @@ void LightmapProbeGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 CollisionShape3DGizmoPlugin::CollisionShape3DGizmoPlugin() {
 	const Color gizmo_color = EDITOR_DEF("editors/3d_gizmos/gizmo_colors/shape", Color(0.5, 0.7, 1));
 	create_material("shape_material", gizmo_color);
+
 	const float gizmo_value = gizmo_color.get_v();
 	const Color gizmo_color_disabled = Color(gizmo_value, gizmo_value, gizmo_value, 0.65);
 	create_material("shape_material_disabled", gizmo_color_disabled);
 	create_handle_material("handles");
+
+	const Color shape_face_color = EDITOR_DEF_RST("editors/3d_gizmos/collision_shape/face", Color(0, 0, 1.0));
+	Ref<StandardMaterial3D> shape_face_color_mat = memnew(StandardMaterial3D);
+	shape_face_color_mat->set_albedo(Color(shape_face_color, 0.66));
+	shape_face_color_mat->set_transparency(StandardMaterial3D::TRANSPARENCY_ALPHA);
+	shape_face_color_mat->set_shading_mode(StandardMaterial3D::SHADING_MODE_UNSHADED);
+	add_material("face_material", shape_face_color_mat);
+
+	Ref<StandardMaterial3D> shape_face_color_mat_disabled = shape_face_color_mat->duplicate();
+	shape_face_color_mat_disabled->set_albedo(Color(shape_face_color, 0.20));
+	add_material("face_material_disabled", shape_face_color_mat_disabled);
 }
 
 bool CollisionShape3DGizmoPlugin::has_gizmo(Node3D *p_spatial) {
@@ -3613,6 +3625,17 @@ void CollisionShape3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 		Vector<Vector3> handles;
 		handles.push_back(Vector3(r, 0, 0));
 		p_gizmo->add_handles(handles, handles_material);
+
+		// Visible Faces
+		// Mesh
+		Ref<ArrayMesh> m = sp->get_debug_arraymesh_faces();
+		// Material
+		if (sp->get_use_custom_faces_color()) {
+			m->surface_set_material(0, sp->get_debug_material(cs->is_disabled()));
+		} else {
+			m->surface_set_material(0, get_material(cs->is_disabled() ? "face_material_disabled" : "face_material"));
+		}
+		p_gizmo->add_mesh(m);
 	}
 
 	if (Object::cast_to<BoxShape3D>(*s)) {
@@ -3640,6 +3663,17 @@ void CollisionShape3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 		p_gizmo->add_lines(lines, material);
 		p_gizmo->add_collision_segments(lines);
 		p_gizmo->add_handles(handles, handles_material);
+
+		// Visible Faces
+		// Mesh
+		Ref<ArrayMesh> m = bs->get_debug_arraymesh_faces();
+		// Material
+		if (bs->get_use_custom_faces_color()) {
+			m->surface_set_material(0, bs->get_debug_material(cs->is_disabled()));
+		} else {
+			m->surface_set_material(0, get_material(cs->is_disabled() ? "face_material_disabled" : "face_material"));
+		}
+		p_gizmo->add_mesh(m);
 	}
 
 	if (Object::cast_to<CapsuleShape3D>(*s)) {
@@ -3710,6 +3744,17 @@ void CollisionShape3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 		handles.push_back(Vector3(cs2->get_radius(), 0, 0));
 		handles.push_back(Vector3(0, cs2->get_height() * 0.5 + cs2->get_radius(), 0));
 		p_gizmo->add_handles(handles, handles_material);
+
+		// Visible Faces
+		// Mesh
+		Ref<ArrayMesh> m = cs2->get_debug_arraymesh_faces();
+		// Material
+		if (cs2->get_use_custom_faces_color()) {
+			m->surface_set_material(0, cs2->get_debug_material(cs->is_disabled()));
+		} else {
+			m->surface_set_material(0, get_material(cs->is_disabled() ? "face_material_disabled" : "face_material"));
+		}
+		p_gizmo->add_mesh(m);
 	}
 
 	if (Object::cast_to<CylinderShape3D>(*s)) {
@@ -3766,6 +3811,17 @@ void CollisionShape3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 		handles.push_back(Vector3(cs2->get_radius(), 0, 0));
 		handles.push_back(Vector3(0, cs2->get_height() * 0.5, 0));
 		p_gizmo->add_handles(handles, handles_material);
+
+		// Visible Faces
+		// Mesh
+		Ref<ArrayMesh> m = cs2->get_debug_arraymesh_faces();
+		// Material
+		if (cs2->get_use_custom_faces_color()) {
+			m->surface_set_material(0, cs2->get_debug_material(cs->is_disabled()));
+		} else {
+			m->surface_set_material(0, get_material(cs->is_disabled() ? "face_material_disabled" : "face_material"));
+		}
+		p_gizmo->add_mesh(m);
 	}
 
 	if (Object::cast_to<WorldMarginShape3D>(*s)) {

@@ -29,6 +29,11 @@
 /*************************************************************************/
 
 #include "capsule_shape_3d.h"
+
+#ifdef DEBUG_ENABLED
+#include "primitive_meshes.h"
+#endif
+
 #include "servers/physics_server_3d.h"
 
 Vector<Vector3> CapsuleShape3D::get_debug_mesh_lines() {
@@ -100,6 +105,18 @@ float CapsuleShape3D::get_height() const {
 	return height;
 }
 
+#ifdef DEBUG_ENABLED
+Ref<ArrayMesh> CapsuleShape3D::get_debug_arraymesh_faces() const {
+	CapsuleMesh sm;
+	sm.set_radius(radius);
+	sm.set_mid_height(height);
+	Array a = sm.surface_get_arrays(0);
+	Ref<ArrayMesh> m = memnew(ArrayMesh);
+	m->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, a);
+	return m;
+}
+#endif
+
 void CapsuleShape3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_radius", "radius"), &CapsuleShape3D::set_radius);
 	ClassDB::bind_method(D_METHOD("get_radius"), &CapsuleShape3D::get_radius);
@@ -111,8 +128,9 @@ void CapsuleShape3D::_bind_methods() {
 }
 
 CapsuleShape3D::CapsuleShape3D() :
-		Shape3D(PhysicsServer3D::get_singleton()->shape_create(PhysicsServer3D::SHAPE_CAPSULE)) {
+		Shape3DVisible(PhysicsServer3D::get_singleton()->shape_create(PhysicsServer3D::SHAPE_CAPSULE)) {
 	radius = 1.0;
 	height = 1.0;
+
 	_update_shape();
 }
